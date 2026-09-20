@@ -1,0 +1,39 @@
+{
+    "name": "rennf93/symfony-guard",
+    "description": "Symfony middleware adapter for guard-core-php: maps Symfony HttpFoundation requests to the guard-core engine and block verdicts back to Symfony responses",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "rennf93/guard-core-php": "^0.1.0",
+        "symfony/http-foundation": "^6.4|^7.0",
+        "symfony/http-kernel": "^6.4|^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "RenzoFranceschini\\GuardCoreSymfony\\": "src/"
+        }
+    },
+    "scripts": {
+        "test": "php bin/test_symfony.php",
+        "lint": "for f in $(find src bin -name '*.php'); do php -l \"$f\" > /dev/null || exit 1; done && echo LINT_OK"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../guard-core-php",
+            "canonical": false
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/rennf93/guard-core-php.git"
+        }
+    ],
+    "config": {
+        "platform": {
+            "php": "8.2.0"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
