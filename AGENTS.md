@@ -8,7 +8,8 @@ rennf93/symfony-guard (https://github.com/rennf93/symfony-guard) is a Symfony mi
 - Composer package `rennf93/symfony-guard`, type `library`, license MIT. No `version` field in composer.json (the psr15-guard and laravel-guard convention); versions come from git tags, of which there are none, so composer installs it as `dev-main`.
 - This repository contains NO security logic. Detection, rate limiting, bans, and verdicts all live in guard-core-php.
 - PHP `^8.2`. Autoload is PSR-4: `RenzoFranceschini\GuardCoreSymfony\` maps to `src/`.
-- Shipped tags: none. There are no git tags and no releases. `main` is protected: never push to it, never merge into it, never create tags or releases.
+- Shipped tags: none. There are no git tags and no releases.
+- Docs site: MkDocs Material in `docs/` (strict build in CI, gh-deploy on push to `master` touching docs sources). Runnable demos in `examples/` are exercised by the live-smoke workflow. `master` is protected: never push to it, never merge into it, never create tags or releases.
 
 ## Ecosystem Position
 
@@ -77,6 +78,9 @@ Composer scripts (composer.json `scripts`; these are the only two):
 | --- | --- |
 | `composer test` | `php bin/test_symfony.php` |
 | `composer lint` | `for f in $(find src bin -name '*.php'); do php -l "$f" > /dev/null || exit 1; done && echo LINT_OK` |
+| `mkdocs build --strict` | Build the docs site (run with `docker run --rm -v "$PWD":/work -w /work python:3.12-slim sh -c "pip install -q mkdocs-material && mkdocs build --strict"`; the `site/` output is gitignored) |
+| `docker compose -f examples/simple_app/docker-compose.yml up --build -d --wait` | Bring up the simple example app plus Redis; then run the curl assertions from `.github/workflows/live-smoke.yml` |
+| `docker compose -f examples/advanced_app/docker-compose.yml up --build -d --wait` | Same for the advanced example (assertions in `examples/advanced_app/README.md`) |
 
 Direct commands used by CI (verified in `.github/workflows/ci.yml`; the same install, lint, and test steps appear in `release.yml` and `scheduled-lint.yml`):
 
@@ -122,7 +126,10 @@ AGENTS.md / CLAUDE.md                 Agent guide (byte-identical copies)
 - `config.platform.php: 8.2.0` in composer.json (see Ecosystem Position for why).
 - No require-dev packages: the test suite needs nothing beyond the runtime deps (Symfony requests are built with `Symfony\Component\HttpFoundation\Request::create`).
 - CI runs a `redis:7-alpine` service container on port 6379 with health checks for the Redis integration tests.
-- Actions are pinned by commit SHA: `actions/checkout` v7.0.1 and `shivammathur/setup-php` 2.37.2.
+- Actions are pinned by commit SHA: `actions/checkout` v7.0.1, `shivammathur/setup-php` 2.37.2, `actions/ai-inference` v3, `crazy-max/ghaction-github-labeler` v6.0.0, `actions/first-interaction` v3.1.0, `actions/labeler` v7.0.0, `actions/stale` v11.0.0, `docker/login-action` v4.6.0, `docker/setup-compose-action` v2.4.0.
+- Examples run on `php:8.3-cli-alpine` (PHP built-in webserver, non-root in the advanced app) with composer builds from `composer:2`; Redis is `redis:7-alpine`.
+- Docs site: mkdocs-material, strict build, deployed to GitHub Pages by `docs.yml` on `master` pushes touching `docs/**`, `mkdocs.yml`, `README.md`, or `src/**`.
+- The examples are demo code, not package surface: they live under `examples/`, carry their own composer.json (no committed lock file), and must never be autoloaded by the library.
 
 ## Testing Guidelines
 
@@ -144,7 +151,7 @@ AGENTS.md / CLAUDE.md                 Agent guide (byte-identical copies)
 
 ## Best Practices
 
-- `main` is protected. Work on a branch, push, open a PR (draft PRs are fine). Never push to `main`, never tag, never publish a release as part of agent work.
+- `master` is protected. Work on a branch, push, open a PR (draft PRs are fine). Never push to `master`, never tag, never publish a release as part of agent work.
 - Never `git add vendor/`, `.DS_Store`, or any stray file. Stage explicit paths only.
 - Keep the adapter thin. If a change adds detection, verdict logic, or response shaping beyond translation, it belongs in guard-core-php, not here.
 - Configuration is constructor options: consumers build the `SecurityConfig` and `GuardEngine` themselves and wrap their kernel (`new GuardMiddleware($kernel, $engine)`). Do not add a Bundle, DI extension, or a config-array-to-SecurityConfig mapper; that is a parallel config surface.
