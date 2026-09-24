@@ -6,7 +6,7 @@
     "require": {
         "php": "^8.2",
         "rennf93/symfony-guard": "dev-master",
-        "rennf93/guard-core-php": "^0.1.0",
+        "rennf93/guard-core-php": "^4.0.4",
         "symfony/http-foundation": "^7.0",
         "symfony/http-kernel": "^7.0"
     },
