@@ -2,22 +2,12 @@
 
 Symfony middleware adapter for [guard-core-php](https://github.com/rennf93/guard-core-php): maps Symfony `HttpFoundation` Request objects to the guard-core engine and translates block verdicts back to Symfony-native responses. Works with Symfony 6.4 LTS and 7.x.
 
+Docs: https://rennf93.github.io/symfony-guard/
+
 ## Install
 
 ```bash
 composer require rennf93/symfony-guard
-```
-
-Until `rennf93/guard-core-php` has a Packagist release, point composer at its repository and allow dev stability:
-
-```json
-{
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "repositories": [
-        { "type": "vcs", "url": "https://github.com/rennf93/guard-core-php" }
-    ]
-}
 ```
 
 ## Usage
@@ -77,7 +67,7 @@ composer test
 
 ## Status
 
-No git tags or releases yet; the package installs from source (`dev-main`). The engine, `rennf93/guard-core-php`, is at `v0.1.0`.
+Released: v1.0.0 on Packagist. The engine, `rennf93/guard-core-php`, is at v4.0.4.
 
 ## License
 
