@@ -213,8 +213,14 @@ $blocked = $middleware->handle(symfonyRequest('/private', '192.0.2.66'), HttpKer
 $t->same(403, $blocked->getStatusCode(), 'blacklisted ip -> 403');
 $t->same('Forbidden', $blocked->getContent(), '403 body exact');
 $t->ok($blocked instanceof Response, 'block response is a Symfony-native response');
-$extra = array_diff_key($blocked->headers->all(), ['cache-control' => true, 'date' => true]);
-$t->same([], $extra, 'no security headers on plain block (framework cache-control/date only)');
+$extra = array_diff_key($blocked->headers->all(), ['cache-control' => true, 'date' => true, 'content-type' => true]);
+$t->same([], $extra, 'no unexpected headers on plain block (framework cache-control/date, engine content-type allowed)');
+// Engine >= 4.1 sets an explicit content type on block responses; the
+// published 4.0.x engine does not, so the header is optional here until
+// the coordinated floor bump.
+if ($blocked->headers->has('Content-Type')) {
+    $t->same('text/plain; charset=utf-8', $blocked->headers->get('Content-Type'), 'block response content type explicit');
+}
 $t->same(0, $kernel->calls, 'downstream kernel not called on block');
 $t->same('ip_security', $hooks[0]['check_name'] ?? null, 'on_block check_name');
 $t->same('IP blacklisted: 192.0.2.66', $hooks[0]['reason'] ?? null, 'on_block reason');
